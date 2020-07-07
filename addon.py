@@ -14,7 +14,7 @@ import json
 from bs4 import BeautifulSoup
 import requests
 
-_useragent = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, lkodiazor Gecko) Chrome/52.0.2743.116 Safari/537.36'
+_useragent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.68 Safari/537.36'
 
 _baseurl = 'https://xtv.cz/'
 _showurl = 'https://xtv.cz/archiv/'
@@ -32,6 +32,12 @@ def logDbg(msg):
 def logErr(msg):
 	log(msg,level=xbmc.LOGERROR)
 
+def smart_truncate(s, width):
+    if s[width].isspace():
+        return s[0:width];
+    else:
+        return s[0:width].rsplit(None, 1)[0]
+        
 def fetchUrl(url):
     logDbg("fetchUrl " + url)
     httpdata = ''
@@ -70,11 +76,19 @@ def listItems(id, page):
     for item in data[u'items']:
         date = datetime.datetime(*(time.strptime(item[u'published_at'], "%Y-%m-%d %H:%M:%S")[:6])).strftime("%Y-%m-%d")
         if item[u'host']:
-            title = item[u'host']
-            desc = item[u'title']
+            host = item[u'host'].strip()
+            desc = item[u'title'].strip()
+            perex = item[u'perex'].strip()
             dur = item[u'duration']
             thumb = item[u'cover']
             url = _showurl+item[u'slug']
+            
+            if item[u'perex']:
+                title = smart_truncate(item[u'perex'], 100)
+            else:
+                title = item[u'host']
+                
+            # title = title, 100)
             
             if dur and ':' in dur:
                 l = dur.strip().split(':')
@@ -83,7 +97,7 @@ def listItems(id, page):
                     duration += int(value) * 60 ** pos
                     
             info={'duration':duration,'date':date}
-            addResolvedLink(title, url, thumb, desc, info)
+            addResolvedLink(title[:100], url, thumb, desc, info)
     if int(data[u'is_more'])>0:        
         p = page + 1
         u = sys.argv[0]+'?mode=1&url=next&id='+urllib.quote_plus(str(id.encode('utf-8')))+'&page='+urllib.quote_plus(str(p))
