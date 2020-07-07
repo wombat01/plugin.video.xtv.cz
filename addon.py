@@ -87,8 +87,6 @@ def listItems(id, page):
                 title = smart_truncate(item[u'perex'], 100)
             else:
                 title = item[u'host']
-                
-            # title = title, 100)
             
             if dur and ':' in dur:
                 l = dur.strip().split(':')
@@ -97,7 +95,7 @@ def listItems(id, page):
                     duration += int(value) * 60 ** pos
                     
             info={'duration':duration,'date':date}
-            addResolvedLink(title[:100], url, thumb, desc, info)
+            addResolvedLink(title, url, thumb, desc, info)
     if int(data[u'is_more'])>0:        
         p = page + 1
         u = sys.argv[0]+'?mode=1&url=next&id='+urllib.quote_plus(str(id.encode('utf-8')))+'&page='+urllib.quote_plus(str(p))
