@@ -21,23 +21,17 @@ _showurl = 'https://xtv.cz/archiv/'
 
 _scriptname = xbmcaddon.Addon('plugin.video.xtv.cz').getAddonInfo('name')
         
-def log(msg, level=xbmc.LOGDEBUG):
+def log(msg, level = xbmc.LOGDEBUG):
     if type(msg).__name__ == 'unicode':
         msg = msg.encode('utf-8')
     xbmc.log("[%s] %s" % (_scriptname, msg.__str__()), level)
 
 def logDbg(msg):
-	log(msg,level=xbmc.LOGDEBUG)
+	log(msg,level = xbmc.LOGDEBUG)
 
 def logErr(msg):
-	log(msg,level=xbmc.LOGERROR)
-
-def smart_truncate(s, width):
-    if s[width].isspace():
-        return s[0:width];
-    else:
-        return s[0:width].rsplit(None, 1)[0]
-        
+	log(msg,level = xbmc.LOGERROR)
+       
 def fetchUrl(url):
     logDbg("fetchUrl " + url)
     httpdata = ''
@@ -64,10 +58,10 @@ def listShows():
             thumb = detail.find('img', {'class': 'porad-logo'})['src']
             id = detail.find('div', {'class': 'porad-toggle'})
             id = str(re.search('\((\d+)\)', str(id.get('ng-click'))).group(1))
-            addDir(name, url, id, thumb, 1)      
+            addDir(name, url, id, thumb, 1)
 
 def listItems(id, page):
-    dataurl = "https://xtv.cz/api/v2/loadmore?type=articles&ignore_ids=&page="+str(page)+"&porad="+str(id)+"&_="+str(int(time.time()))   
+    dataurl = "https://xtv.cz/api/v2/loadmore?type=articles&ignore_ids=&page="+str(page)+"&porad="+str(id)+"&_="+str(int(time.time()))
     data = json.loads(fetchUrl(dataurl))
 
     if (not data):
@@ -82,25 +76,26 @@ def listItems(id, page):
             dur = item[u'duration']
             thumb = item[u'cover']
             url = _showurl+item[u'slug']
-            
+
             if item[u'perex']:
-                title = smart_truncate(item[u'perex'], 100)
+                title = item[u'perex'].strip()
             else:
                 title = item[u'host']
-            
+
             if dur and ':' in dur:
                 l = dur.strip().split(':')
                 duration = 0
                 for pos, value in enumerate(l[::-1]):
                     duration += int(value) * 60 ** pos
                     
-            info={'duration':duration,'date':date}
+            info = {'duration':duration,'date':date}
             addResolvedLink(title, url, thumb, desc, info)
-    if int(data[u'is_more'])>0:        
+            
+    if int(data[u'is_more']) > 0:
         p = page + 1
         u = sys.argv[0]+'?mode=1&url=next&id='+urllib.quote_plus(str(id.encode('utf-8')))+'&page='+urllib.quote_plus(str(p))
         liNext = xbmcgui.ListItem("Další")
-        xbmcplugin.addDirectoryItem(handle=addonHandle,url=u,listitem=liNext,isFolder=True)
+        xbmcplugin.addDirectoryItem(handle = addonHandle,url = u,listitem = liNext,isFolder = True)
 
 def videoLink(url): 
     soup = BeautifulSoup(fetchUrl(url), 'html.parser')
@@ -108,82 +103,85 @@ def videoLink(url):
     title = soup.find("meta", property="og:description")
     desc = soup.find("meta", property="og:title")
     streams = soup.find("source", {"type":"video/mp4"})
-    stream_url=streams['src']
+    stream_url = streams['src']
         
     liz = xbmcgui.ListItem()
     liz = xbmcgui.ListItem(path=stream_url)
     liz.setInfo('video', {'title': title[u"content"], 'plot' : desc[u"content"]})
     liz.setProperty("isPlayable", "true")
-    xbmcplugin.setResolvedUrl(handle=addonHandle, succeeded=True, listitem=liz)
-    
+
+    xbmcplugin.setResolvedUrl(handle = addonHandle, succeeded = True, listitem = liz)
+
 def addDir(name,url,id,image,mode):
-    u=sys.argv[0]+"?url="+urllib.quote_plus(url.encode('utf-8'))+"&id="+urllib.quote_plus(str(id.encode('utf-8')))+"&mode="+str(mode)+"&name="+urllib.quote_plus(name.encode('utf-8'))
-    ok=True
-    liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=image)   
+    u = sys.argv[0]+"?url="+urllib.quote_plus(url.encode('utf-8'))+"&id="+urllib.quote_plus(str(id.encode('utf-8')))+"&mode="+str(mode)+"&name="+urllib.quote_plus(name.encode('utf-8'))
+    ok = True
+    liz = xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=image)   
     liz.setInfo( type="Video", infoLabels={ "Title": name } )
-    ok=xbmcplugin.addDirectoryItem(handle=addonHandle,url=u,listitem=liz,isFolder=True)
+    ok = xbmcplugin.addDirectoryItem(handle = addonHandle,url = u,listitem = liz,isFolder = True)
     return ok
-    
+
 def addResolvedLink(name, url, image, desc, info={}):
-    u=sys.argv[0]+"?url="+urllib.quote_plus(url.encode('utf-8'))+"&mode=10&name="+urllib.quote_plus(name.encode('utf-8'))+"&desc="+urllib.quote_plus(desc.encode('utf-8'))
-    ok=True
+    u = sys.argv[0]+"?url="+urllib.quote_plus(url.encode('utf-8'))+"&mode=10&name="+urllib.quote_plus(name.encode('utf-8'))+"&desc="+urllib.quote_plus(desc.encode('utf-8'))
+    ok = True
     
-    liz=xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=image)   
+    liz = xbmcgui.ListItem(name, iconImage="DefaultFolder.png", thumbnailImage=image)
 
     if info['duration']:
         liz.addStreamInfo('video', {'duration': info['duration']})
+
     liz.setThumbnailImage(image)
     liz.setProperty('IsPlayable', 'true')
     liz.setInfo('video', {'mediatype': 'episode', 'title': name, 'plot': desc, 'premiered': info['date']})
     liz.setProperty('fanart_image', image)
-    ok=xbmcplugin.addDirectoryItem(handle=addonHandle, url=u, listitem=liz, isFolder=False)
-    return ok
     
+    ok = xbmcplugin.addDirectoryItem(handle = addonHandle, url = u, listitem = liz, isFolder = False)
+    return ok
+
 def get_params():
-    param=[]
-    paramstring=sys.argv[2]
-    if len(paramstring)>=2:
-        params=sys.argv[2]
-        cleanedparams=params.replace('?','')
-        if (params[len(params)-1]=='/'):
-            params=params[0:len(params)-2]
-        pairsofparams=cleanedparams.split('&')
-        param={}
+    param = []
+    paramstring = sys.argv[2]
+    if len(paramstring) >= 2:
+        params = sys.argv[2]
+        cleanedparams = params.replace('?','')
+        if (params[len(params)-1] == '/'):
+            params = params[0:len(params)-2]
+        pairsofparams = cleanedparams.split('&')
+        param = {}
         for i in range(len(pairsofparams)):
-            splitparams={}
-            splitparams=pairsofparams[i].split('=')
-            if (len(splitparams))==2:
+            splitparams = {}
+            splitparams = pairsofparams[i].split('=')
+            if (len(splitparams)) == 2:
                 param[splitparams[0]]=splitparams[1]
     return param
 
-addonHandle=int(sys.argv[1])
-params=get_params()
-url=None
-id=None
-name=None
-thumb=None
-mode=None
-page=0
+addonHandle = int(sys.argv[1])
+params = get_params()
+url = None
+id = None
+name = None
+thumb = None
+mode = None
+page = 0
 
 xbmcplugin.setContent(addonHandle, 'episodes')
 
 try:
-    url=urllib.unquote_plus(params["url"])
+    url = urllib.unquote_plus(params["url"])
 except:
     pass
     
 try:
-    id=urllib.unquote_plus(params["id"])
+    id = urllib.unquote_plus(params["id"])
 except:
     pass
 
 try:
-    name=urllib.unquote_plus(params["name"])
+    name = urllib.unquote_plus(params["name"])
 except:
     pass
     
 try:
-    mode=int(params["mode"])
+    mode = int(params["mode"])
 except:
     pass
     
@@ -192,16 +190,16 @@ try:
 except:
     pass
 
-if mode==None or url==None or len(url)<1:
+if mode == None or url == None or len(url)<1:
     listShows()
     logDbg("listShows()")
-elif mode==1:
+elif mode == 1:
     listItems(id,page)
     logDbg("listItems()")
-elif mode==2:
+elif mode == 2:
     listItems(str(0),page)
     logDbg("listNewest()")
-elif mode==10:
+elif mode == 10:
     videoLink(url)
     logDbg("videoLink()")
     
