@@ -99,7 +99,7 @@ def get_list(show_id, page):
     xbmcplugin.setContent(plugin.handle, 'episodes')
     data = json.loads(get_page("https://xtv.cz/api/v2/loadmore?type=articles&ignore_ids=&page="+str(page)+"&porad="+show_id+"&_="+str(int(time.time()))))
     
-    for item in data[u'items']:     
+    for item in data[u'items']:
         if item[u'host']:
             host = item[u'host'].strip()
             desc = item[u'title'].strip()
@@ -121,7 +121,7 @@ def get_list(show_id, page):
                     duration += int(value) * 60 ** pos
             
             list_item = xbmcgui.ListItem(title)
-            list_item.setInfo('video', {'mediatype': 'episode', 'title': title, 'plot': perex, 'duration': duration, 'premiered': date})
+            list_item.setInfo('video', {'mediatype': 'episode', 'title': title, 'plot': desc, 'duration': duration, 'premiered': date})
             list_item.setArt({'icon': thumb})
             list_item.setProperty('IsPlayable', 'true')
             xbmcplugin.addDirectoryItem(plugin.handle, plugin.url_for(get_video, slug_url), list_item, False)
