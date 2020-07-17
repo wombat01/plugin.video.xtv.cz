@@ -139,14 +139,9 @@ def get_list(show_id, page):
 @plugin.route('/get_video')
 def get_video():
     soup = BeautifulSoup(get_page(plugin.args['url'][0]), 'html.parser')
-    
-    # title = soup.find("meta", property="og:description")
-    # desc = soup.find("meta", property="og:title")
     stream_url = soup.find("source", {"type":"video/mp4"})['src']
     
     list_item = xbmcgui.ListItem(path=stream_url)
-    # print title
-    # list_item.setInfo('video', {'title': title, 'plot': desc})
     xbmcplugin.setResolvedUrl(plugin.handle, True, list_item)
 
 def run():
