@@ -98,9 +98,10 @@ def list_archive():
 def get_list(show_id, page):
     xbmcplugin.setContent(plugin.handle, 'episodes')
     data = json.loads(get_page("https://xtv.cz/api/v2/loadmore?type=articles&ignore_ids=&page="+str(page)+"&porad="+show_id+"&_="+str(int(time.time()))))
-    
+    count=0
     for item in data[u'items']:
-        if item[u'host']:
+        if item[u'host'] and item[u'premium'] == 0:
+        
             host = item[u'host'].strip()
             desc = item[u'title'].strip()
             perex = item[u'perex'].strip()
@@ -121,12 +122,13 @@ def get_list(show_id, page):
                     duration += int(value) * 60 ** pos
             
             list_item = xbmcgui.ListItem(title)
-            list_item.setInfo('video', {'mediatype': 'episode', 'title': title, 'plot': desc, 'duration': duration, 'premiered': date})
+            list_item.setInfo('video', {'mediatype': 'tvshow', 'title': title, 'plot': desc, 'duration': duration, 'premiered': date})
             list_item.setArt({'icon': thumb})
             list_item.setProperty('IsPlayable', 'true')
-            xbmcplugin.addDirectoryItem(plugin.handle, plugin.url_for(get_video, slug_url), list_item, False)
+            xbmcplugin.addDirectoryItem(plugin.handle, plugin.url_for(get_video, url=slug_url), list_item, False)
+            count +=1
             
-    if int(data[u'is_more']) > 0:
+    if int(data[u'is_more']) > 0 and count>0:
         next_page = int(page) + 1
         list_item = xbmcgui.ListItem(label=_addon.getLocalizedString(30003))
         list_item.setArt({'icon': 'DefaultFolder.png'})
@@ -134,15 +136,17 @@ def get_list(show_id, page):
         
     xbmcplugin.endOfDirectory(plugin.handle)
     
-@plugin.route('/get_video/<path:url>')
-def get_video(url):
-    soup = BeautifulSoup(get_page(url), 'html.parser')
+@plugin.route('/get_video')
+def get_video():
+    soup = BeautifulSoup(get_page(plugin.args['url'][0]), 'html.parser')
     
-    title = soup.find("meta", property="og:description")
-    desc = soup.find("meta", property="og:title")
+    # title = soup.find("meta", property="og:description")
+    # desc = soup.find("meta", property="og:title")
     stream_url = soup.find("source", {"type":"video/mp4"})['src']
     
     list_item = xbmcgui.ListItem(path=stream_url)
+    # print title
+    # list_item.setInfo('video', {'title': title, 'plot': desc})
     xbmcplugin.setResolvedUrl(plugin.handle, True, list_item)
 
 def run():
