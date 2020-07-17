@@ -1,7 +1,7 @@
 # Kodi Media Center language file
-# Addon Name: Dokumenty.tv
-# Addon id: plugin.video.dokumenty.tv
-# Addon Provider: cache
+# Addon Name: XTV.cz
+# Addon id: plugin.video.xtv.cz
+# Addon Provider: wombat
 msgid ""
 msgstr ""
 
