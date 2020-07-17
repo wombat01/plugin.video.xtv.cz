@@ -140,7 +140,6 @@ def get_video(url):
     
     title = soup.find("meta", property="og:description")
     desc = soup.find("meta", property="og:title")
-    
     stream_url = soup.find("source", {"type":"video/mp4"})['src']
     
     list_item = xbmcgui.ListItem(path=stream_url)
