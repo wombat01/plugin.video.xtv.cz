@@ -1,0 +1,29 @@
+# Kodi Media Center language file
+# Addon Name: Dokumenty.tv
+# Addon id: plugin.video.dokumenty.tv
+# Addon Provider: cache
+msgid ""
+msgstr ""
+
+"Content-Type: text/plain; charset=UTF-8\n"
+"Language: cs\n"
+
+msgctxt "#30000"
+msgid "XTV.cz"
+msgstr "XTV.cz"
+
+msgctxt "#30001"
+msgid "Recent"
+msgstr "Poslední"
+
+msgctxt "#30002"
+msgid "Shows"
+msgstr "Pořady"
+
+msgctxt "#30003"
+msgid "Next videos"
+msgstr "Další videa"
+
+msgctxt "#30004"
+msgid "Archive"
+msgstr "Archiv"
