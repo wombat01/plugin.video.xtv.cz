@@ -1,26 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.xtv.cz"
-       name="XTV.cz"
-       version="1.2.0"
-       provider-name="wombat">
-  <requires>
-	<import addon="xbmc.python" version="2.26.0"/>
-    <import addon="script.module.requests" version="2.22.0"/>
-    <import addon="script.module.beautifulsoup4" version="4.6.2"/>
-	<import addon="script.module.routing" version="0.2.3"/>
-  </requires>
-  <extension point="xbmc.python.pluginsource" library="main.py">
-    <provides>video</provides>
-  </extension>
-  <extension point="xbmc.addon.metadata">
-    <platform>all</platform>
-	<summary lang="en_GB">XTV.cz - Nezávislá internetová televize</summary>
-    <summary lang="cs_CZ">XTV.cz - Nezávislá internetová televize</summary>
-    <description lang="en_GB">XTV je nezávislá internetová televize, která má ambici přinášet svým divákům rozhovory s osobnostmi českého veřejného života – jejich postoje, názory, stanoviska, argumenty i aktuální komentáře přímo do jejich počítačů či mobilních zařízení.</description>
-	<description lang="cs_CZ">XTV je nezávislá internetová televize, která má ambici přinášet svým divákům rozhovory s osobnostmi českého veřejného života – jejich postoje, názory, stanoviska, argumenty i aktuální komentáře přímo do jejich počítačů či mobilních zařízení.</description>
-    <source>https://github.com/wombat01/plugin.video.xtv.cz</source>
-	<assets>
-		<icon>resources/icon.png</icon>         
+<addon id="plugin.video.xtv.cz" name="XTV.cz" version="1.2.0" provider-name="wombat">
+    <requires>
+        <import addon="xbmc.python" version="2.26.0"/>
+        <import addon="script.module.requests" version="2.22.0"/>
+        <import addon="script.module.beautifulsoup4" version="4.6.2"/>
+        <import addon="script.module.routing" version="0.2.3"/>
+    </requires>
+    <extension point="xbmc.python.pluginsource" library="main.py">
+        <provides>video</provides>
+    </extension>
+    <extension point="xbmc.addon.metadata">
+        <platform>all</platform>
+        <summary lang="en_GB">XTV.cz - Nezávislá internetová televize</summary>
+        <summary lang="cs_CZ">XTV.cz - Nezávislá internetová televize</summary>
+        <description lang="en_GB">XTV je nezávislá internetová televize, která má ambici přinášet svým divákům rozhovory s osobnostmi českého veřejného života – jejich postoje, názory, stanoviska, argumenty i aktuální komentáře přímo do jejich počítačů či mobilních zařízení.</description>
+        <description lang="cs_CZ">XTV je nezávislá internetová televize, která má ambici přinášet svým divákům rozhovory s osobnostmi českého veřejného života – jejich postoje, názory, stanoviska, argumenty i aktuální komentáře přímo do jejich počítačů či mobilních zařízení.</description>
+        <source>https://github.com/wombat01/plugin.video.xtv.cz</source>
+    <assets>
+        <icon>resources/icon.png</icon>
     </assets>
     <news>
 v1.2.0 (2020-07-17)
@@ -78,6 +75,6 @@ v1.0.1 (2019-09-01)
 
 v1.0.0 (2019-09-01)
 - first release
-        </news>
+    </news>
     </extension>
 </addon>
