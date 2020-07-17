@@ -13,7 +13,7 @@ msgid "XTV.cz"
 msgstr ""
 
 msgctxt "#30001"
-msgid "Recent"
+msgid "Recent Videos"
 msgstr ""
 
 msgctxt "#30002"
