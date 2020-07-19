@@ -55,7 +55,7 @@ def list_shows():
             show_id = str(re.search('\((\d+)\)', str(info.find('div', {'class': 'porad-toggle'}).get('ng-click'))).group(1))
             
             list_item = xbmcgui.ListItem(label=name)
-            list_item.setInfo('video', {'title': name, 'plot': desc})
+            list_item.setInfo('video', {'mediatype': 'tvshow', 'title': name, 'plot': desc})
             list_item.setArt({'icon': thumb})
             listing.append((plugin.url_for(get_list, show_id, 0), list_item, True))
             
@@ -69,15 +69,13 @@ def list_shows():
 @plugin.route('/list_archive/')
 def list_archive():
     xbmcplugin.setContent(plugin.handle, 'tvshows')
-    
     archive_dict = {
-    'p-s':'P.S',
-    'na-vrcholu':'Na vrcholu',
-    'praha':'Praha',
-    'kauzy-x':'Kauzy X',
-    'bonusova-videa':'Bonusová videa'
+        'p-s':'P.S.',
+        'na-vrcholu':'Na vrcholu',
+        'praha':'Praha',
+        'kauzy-x':'Kauzy X',
+        'bonusova-videa':'Bonusová videa'
     }
-    
     soup = BeautifulSoup(get_page(_baseurl+'porady'), 'html.parser')
     porady = soup.find('div', {'class': 'porady-archiv-list'}).find_all('div', {'class': 'porad-wrapper'})
     
@@ -91,7 +89,7 @@ def list_archive():
         show_id = str(re.search('\((\d+)\)', str(info.find('div', {'class': 'porad-toggle'}).get('ng-click'))).group(1))
         
         list_item = xbmcgui.ListItem(label=name)
-        list_item.setInfo('video', {'title': name, 'plot': desc})
+        list_item.setInfo('video', {'mediatype': 'tvshow', 'title': name, 'plot': desc})
         list_item.setArt({'icon': thumb})
         listing.append((plugin.url_for(get_list, show_id, 0), list_item, True))
         
@@ -112,7 +110,7 @@ def get_list(show_id, page):
             perex = item[u'perex'].strip()
             dur = item[u'duration']
             thumb = item[u'cover']
-            slug_url = _showurl+item[u'slug']
+            slug_url = item[u'slug']
             date = datetime.datetime(*(time.strptime(item[u'published_at'], "%Y-%m-%d %H:%M:%S")[:6])).strftime("%Y-%m-%d")
             
             if item[u'perex']:
@@ -130,7 +128,7 @@ def get_list(show_id, page):
             list_item.setInfo('video', {'mediatype': 'episode', 'title': title, 'plot': desc, 'duration': duration, 'premiered': date})
             list_item.setArt({'icon': thumb})
             list_item.setProperty('IsPlayable', 'true')
-            listing.append((plugin.url_for(get_video, url=slug_url), list_item, False))
+            listing.append((plugin.url_for(get_video, slug_url), list_item, False))
             count +=1
             
     if int(data[u'is_more']) > 0 and count>0:
@@ -142,9 +140,9 @@ def get_list(show_id, page):
     xbmcplugin.addDirectoryItems(plugin.handle, listing, len(listing))
     xbmcplugin.endOfDirectory(plugin.handle)
     
-@plugin.route('/get_video')
-def get_video():
-    soup = BeautifulSoup(get_page(plugin.args['url'][0]), 'html.parser')
+@plugin.route('/get_video/<path:slug_url>')
+def get_video(slug_url):
+    soup = BeautifulSoup(get_page(_showurl+slug_url), 'html.parser')
     stream_url = soup.find("source", {"type":"video/mp4"})['src']
     
     list_item = xbmcgui.ListItem(path=stream_url)
