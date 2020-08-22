@@ -21,25 +21,7 @@ plugin = routing.Plugin()
 _baseurl = 'https://xtv.cz/'
 _showurl = 'https://xtv.cz/archiv/'
 _apiurl = 'https://xtv.cz/api/v3/'
-
-def get_page(url):
-    r = requests.get(url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.68 Safari/537.36'})
-    return r.content
-
-@plugin.route('/')
-def root():
-    listing = []
-    list_item = xbmcgui.ListItem(_addon.getLocalizedString(30001))
-    list_item.setArt({'icon': 'DefaultRecentlyAddedEpisodes.png'})
-    listing.append((plugin.url_for(get_list, 0, 0), list_item, True))
-    
-    list_item = xbmcgui.ListItem(_addon.getLocalizedString(30002))
-    list_item.setArt({'icon': 'DefaultTVShows.png'})
-    listing.append((plugin.url_for(list_shows), list_item, True))
-    
-    xbmcplugin.addDirectoryItems(plugin.handle, listing, len(listing))
-    xbmcplugin.endOfDirectory(plugin.handle)
-    
+  
 @plugin.route('/list_shows/')
 def list_shows():
     xbmcplugin.setContent(plugin.handle, 'tvshows')
@@ -57,8 +39,8 @@ def list_shows():
             
             list_item = xbmcgui.ListItem(label=name)
             list_item.setInfo('video', {'mediatype': 'tvshow', 'title': name, 'plot': desc})
-            list_item.setArt({'icon': thumb})
-            listing.append((plugin.url_for(get_list, show_id, 0), list_item, True))
+            list_item.setArt({'poster': thumb})
+            listing.append((plugin.url_for(get_list, show_id = show_id, page = 0), list_item, True))
             
     list_item = xbmcgui.ListItem(_addon.getLocalizedString(30004))
     list_item.setArt({'icon': 'DefaultFolder.png'})
@@ -76,9 +58,8 @@ def list_archive():
     
     listing = []
     for porad in porady:
-        url = porad.get('id')
-        porad_dict = (list(filter(lambda x:x['slug'] == url, porady_dict)))[0]['title']
-        name = porad_dict
+        url = porad.get('id') 
+        name = (list(filter(lambda x:x['slug'] == url, porady_dict)))[0]['title']
         info = soup.find('div', {'id': url, 'class': 'porad-wrapper'}).find("div", {'class': 'porad-info'})
         desc = info.find('div', {'class': 'porad-popis'}).get_text()
         thumb = info.find('img', {'class': 'porad-logo'})['src']
@@ -86,21 +67,23 @@ def list_archive():
         
         list_item = xbmcgui.ListItem(label=name)
         list_item.setInfo('video', {'mediatype': 'tvshow', 'title': name, 'plot': desc})
-        list_item.setArt({'icon': thumb})
-        listing.append((plugin.url_for(get_list, show_id, 0), list_item, True))
+        list_item.setArt({'poster': thumb})
+        listing.append((plugin.url_for(get_list, show_id = show_id, page = 0), list_item, True))
         
     xbmcplugin.addDirectoryItems(plugin.handle, listing, len(listing))
     xbmcplugin.endOfDirectory(plugin.handle)
     
-@plugin.route('/get_list/<show_id>/<page>')
-def get_list(show_id, page):
+@plugin.route('/get_list/')
+def get_list():
     xbmcplugin.setContent(plugin.handle, 'episodes')
+    show_id = plugin.args['show_id'][0]
+    page = int(plugin.args['page'][0])
+    porady_dict = json.loads(get_page(_apiurl+'shows'))
     data = json.loads(get_page(_apiurl+'loadmore?type=articles&ignore_ids=&page='+str(page)+'&porad='+show_id+'&_='+str(int(time.time()))))
     count=0
     listing = []
     for item in data[u'items']:
         if item[u'host'] and item[u'premium'] == 0:
-        
             host = item[u'host'].strip()
             desc = item[u'title'].strip()
             perex = item[u'perex'].strip()
@@ -118,8 +101,7 @@ def get_list(show_id, page):
                 l = dur.strip().split(':')
                 duration = 0
                 for pos, value in enumerate(l[::-1]):
-                    duration += int(value) * 60 ** pos
-            
+                    duration += int(value) * 60 ** pos      
             list_item = xbmcgui.ListItem(title)
             list_item.setInfo('video', {'mediatype': 'episode', 'title': title, 'plot': desc, 'duration': duration, 'premiered': date})
             list_item.setArt({'icon': thumb})
@@ -128,10 +110,9 @@ def get_list(show_id, page):
             count +=1
             
     if int(data[u'is_more']) > 0 and count>0:
-        next_page = int(page) + 1
         list_item = xbmcgui.ListItem(label=_addon.getLocalizedString(30003))
         list_item.setArt({'icon': 'DefaultFolder.png'})
-        listing.append((plugin.url_for(get_list, show_id, next_page), list_item, True))   
+        listing.append((plugin.url_for(get_list, show_id = show_id, page = page + 1), list_item, True))   
     
     xbmcplugin.addDirectoryItems(plugin.handle, listing, len(listing))
     xbmcplugin.endOfDirectory(plugin.handle)
@@ -144,6 +125,24 @@ def get_video(slug_url):
     list_item = xbmcgui.ListItem(path=stream_url)
     xbmcplugin.setResolvedUrl(plugin.handle, True, list_item)
 
+@plugin.route('/')
+def root():
+    listing = []
+    list_item = xbmcgui.ListItem(_addon.getLocalizedString(30001))
+    list_item.setArt({'icon': 'DefaultRecentlyAddedEpisodes.png'})
+    listing.append((plugin.url_for(get_list, show_id = 0, page = 0), list_item, True))
+    
+    list_item = xbmcgui.ListItem(_addon.getLocalizedString(30002))
+    list_item.setArt({'icon': 'DefaultTVShows.png'})
+    listing.append((plugin.url_for(list_shows), list_item, True))
+    
+    xbmcplugin.addDirectoryItems(plugin.handle, listing, len(listing))
+    xbmcplugin.endOfDirectory(plugin.handle)
+    
+def get_page(url):
+    r = requests.get(url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.68 Safari/537.36'})
+    return r.content
+    
 def run():
     plugin.run()
     
