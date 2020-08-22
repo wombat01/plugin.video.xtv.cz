@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import routing
-
 import xbmc
 import xbmcaddon
 import xbmcgui
 import xbmcplugin
-
 import re
 import time
 import datetime
@@ -80,7 +78,7 @@ def get_list():
     page = int(plugin.args['page'][0])
     porady_dict = json.loads(get_page(_apiurl+'shows'))
     data = json.loads(get_page(_apiurl+'loadmore?type=articles&ignore_ids=&page='+str(page)+'&porad='+show_id+'&_='+str(int(time.time()))))
-    count=0
+    count = 0
     listing = []
     for item in data[u'items']:
         if item[u'host'] and item[u'premium'] == 0:
@@ -91,12 +89,7 @@ def get_list():
             thumb = item[u'cover']
             slug_url = item[u'slug']
             date = datetime.datetime(*(time.strptime(item[u'published_at'], "%Y-%m-%d %H:%M:%S")[:6])).strftime("%Y-%m-%d")
-            
-            if item[u'perex']:
-                title = item[u'perex'].strip()
-            else:
-                title = item[u'host']
-            
+            title = item[u'perex'].strip() if item[u'perex'] else item[u'host']
             if dur:
                 l = dur.strip().split(':')
                 duration = 0
@@ -107,8 +100,7 @@ def get_list():
             list_item.setArt({'icon': thumb})
             list_item.setProperty('IsPlayable', 'true')
             listing.append((plugin.url_for(get_video, slug_url), list_item, False))
-            count +=1
-            
+            count +=1       
     if int(data[u'is_more']) > 0 and count>0:
         list_item = xbmcgui.ListItem(label=_addon.getLocalizedString(30003))
         list_item.setArt({'icon': 'DefaultFolder.png'})
@@ -140,7 +132,7 @@ def root():
     xbmcplugin.endOfDirectory(plugin.handle)
     
 def get_page(url):
-    r = requests.get(url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.68 Safari/537.36'})
+    r = requests.get(url, headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:80.0) Gecko/20100101 Firefox/80.0'})
     return r.content
     
 def run():
