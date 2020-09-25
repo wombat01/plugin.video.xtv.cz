@@ -8,10 +8,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Language: cs\n"
 
-msgctxt "#30000"
-msgid "XTV.cz"
-msgstr "XTV.cz"
-
 msgctxt "#30001"
 msgid "Recent Videos"
 msgstr "Poslední videa"
