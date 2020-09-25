@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 import routing
 import xbmc
 import xbmcaddon
@@ -55,7 +54,7 @@ def list_archive():
     listing = []
     for porad in porady:
         url = porad.get('id') 
-        show_title = (list(filter(lambda x:x['slug'] == url, porady_dict)))[0]['title']
+        show_title = (list([x for x in porady_dict if x['slug'] == slug_show]))[0]['title']
         info = soup.find('div', {'id': url, 'class': 'porad-wrapper'}).find("div", {'class': 'porad-info'})
         desc = info.find('div', {'class': 'porad-popis'}).get_text()
         thumb = info.find('img', {'class': 'porad-logo'})['src']
@@ -88,7 +87,7 @@ def get_list():
             thumb = item[u'cover']
             slug_url = item[u'slug']
             slug_show = item[u'porad']
-            show_title = (list(filter(lambda x:x['slug'] == slug_show, porady_dict)))[0]['title']
+            show_title = (list([x for x in porady_dict if x['slug'] == slug_show]))[0]['title']
             title = item[u'perex'].strip() if item[u'perex'] else item[u'host']
             title_label = title
             if category == 1:
