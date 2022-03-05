@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.video.xtv.cz" name="XTV.cz" version="1.3.0" provider-name="wombat">
+<addon id="plugin.video.xtv.cz" name="XTV.cz" version="1.3.1" provider-name="wombat">
     <requires>
         <import addon="xbmc.python" version="3.0.0"/>
         <import addon="script.module.requests" version="2.22.0"/>
@@ -16,10 +16,10 @@
         <description lang="en_GB">XTV je nezávislá internetová televize, která má ambici přinášet svým divákům rozhovory s osobnostmi českého veřejného života – jejich postoje, názory, stanoviska, argumenty i aktuální komentáře přímo do jejich počítačů či mobilních zařízení.</description>
         <description lang="cs_CZ">XTV je nezávislá internetová televize, která má ambici přinášet svým divákům rozhovory s osobnostmi českého veřejného života – jejich postoje, názory, stanoviska, argumenty i aktuální komentáře přímo do jejich počítačů či mobilních zařízení.</description>
         <source>https://github.com/wombat01/plugin.video.xtv.cz</source>
-    <assets>
-        <icon>resources/icon.png</icon>
-    </assets>
-    <news>Kodi 19
-    </news>
+        <assets>
+            <icon>resources/icon.png</icon>
+        </assets>
+        <news>Oprava přehrávání
+        </news>
     </extension>
 </addon>
